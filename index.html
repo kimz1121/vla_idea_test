@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP 시각화 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f13;
+  --surface: #17171e;
+  --surface2: #1e1e28;
+  --border: #2a2a38;
+  --text: #e8e6f0;
+  --text-sub: #8a88a0;
+  --text-muted: #4a4860;
+  --purple: #9b8dff;
+  --teal: #3ecfaa;
+  --amber: #f5a623;
+  --coral: #ff6b6b;
+  --green: #5dde8a;
+  --blue: #5b9cf6;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Pretendard', -apple-system, sans-serif;
+  --nav-w: 220px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── Sidebar Nav ── */
+.nav {
+  width: var(--nav-w);
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 28px 0;
+  position: fixed;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+.nav-logo {
+  padding: 0 20px 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.nav-logo .label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .15em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.nav-logo .title {
+  font-size: 15px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--purple), var(--teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-item {
+  margin: 2px 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-sub);
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active {
+  background: linear-gradient(135deg, #2a2060, #10304a);
+  color: var(--text);
+  border-color: var(--border);
+}
+.nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-footer {
+  margin-top: auto;
+  padding: 16px 20px 0;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ── Main ── */
+.main {
+  margin-left: var(--nav-w);
+  flex: 1;
+  padding: 48px 40px 80px;
+  max-width: calc(900px + var(--nav-w));
+}
+.page { display: none; }
+.page.active { display: block; }
+
+.page-header { margin-bottom: 36px; }
+.page-header .eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: var(--purple);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.page-header h1 {
+  font-size: clamp(22px, 4vw, 34px);
+  font-weight: 700;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #e8e6f0 0%, #9b8dff 60%, #3ecfaa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+.page-header p { font-size: 14px; color: var(--text-sub); line-height: 1.6; max-width: 560px; }
+
+/* ── Shared UI ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.card-header {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; }
+.panel-body { padding: 16px 18px; }
+
+.tab-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.tbtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-sub);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--sans);
+  font-weight: 500;
+  transition: all .15s;
+}
+.tbtn:hover { color: var(--text); }
+.tbtn.on {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, #3b2f7a, #1e4a6e);
+  box-shadow: 0 0 18px rgba(155,141,255,.15);
+}
+
+.info-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.7;
+  margin-top: 14px;
+}
+.info-box .hl { color: var(--text); font-weight: 600; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ══════════════════════════════
+   PAGE 1: Context Window Slider
+   ══════════════════════════════ */
+.slider-row { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.slider-row label { font-size: 13px; color: var(--text-sub); min-width: 110px; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--purple); }
+.slider-row .val { font-family: var(--mono); font-size: 15px; font-weight: 700; min-width: 28px; }
+
+.ctx-bar-wrap {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.ctx-bar-inner { display: flex; height: 40px; }
+.ctx-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-sub); }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.preset-btn {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text-sub);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: var(--sans);
+}
+.preset-btn:hover { border-color: var(--purple); color: var(--text); }
+.preset-btn.danger { border-color: rgba(255,107,107,.3); color: var(--coral); }
+
+.warn-card {
+  border-radius: 10px;
+  padding: 13px 16px;
+  margin-top: 14px;
+  border: 1px solid;
+  font-size: 13px;
+  line-height: 1.6;
+  transition: all .2s;
+}
+.warn-title { font-weight: 600; margin-bottom: 3px; }
+
+/* ══════════════════════════════
+   PAGE 2: JSON Spec Comparator
+   ══════════════════════════════ */
+.scores-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 18px; }
+.score-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.score-lbl { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; }
+.score-num { font-family: var(--mono); font-size: 22px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
+.bar-bg { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; transition: width .4s cubic-bezier(.4,0,.2,1); }
+
+.verdict-banner {
+  border-radius: 10px;
+  border: 1px solid;
+  padding: 13px 16px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media(max-width:680px){ .two-col { grid-template-columns: 1fr; } }
+
+.code-block {
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.75;
+  color: #c9c7e0;
+  overflow-x: auto;
+  white-space: pre;
+  max-height: 310px;
+  overflow-y: auto;
+}
+.k { color: #9b8dff; }
+.s { color: #3ecfaa; }
+.c { color: #555470; }
+.t { color: #f5a623; }
+.w { color: #ff6b6b; }
+.g { color: #5dde8a; }
+
+.issues-list { padding: 14px 16px; }
+.issue-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--text-sub); line-height: 1.5;
+}
+.issue-row:last-child { border-bottom: none; }
+.issue-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+.call-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.call-hdr {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  display: flex; align-items: center; gap: 6px;
+}
+.call-body {
+  padding: 14px 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: #c9c7e0;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* mobile nav toggle */
+.nav-toggle {
+  display: none;
+  position: fixed;
+  top: 12px; left: 12px;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 18px;
+}
+@media(max-width:720px){
+  .nav { transform: translateX(-100%); transition: transform .2s; }
+  .nav.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 56px 20px 60px; }
+  .nav-toggle { display: block; }
+  .scores-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="toggleNav()">☰</button>
+
+<!-- ── Sidebar ── -->
+<nav class="nav" id="nav">
+  <div class="nav-logo">
+    <div class="label">MCP Guide</div>
+    <div class="title">시각화 가이드</div>
+  </div>
+  <div class="nav-item active" onclick="goPage(0)" data-page="0">
+    <span class="icon">📊</span> 컨텍스트 창 오염
+  </div>
+  <div class="nav-item" onclick="goPage(1)" data-page="1">
+    <span class="icon">🔬</span> JSON 명세 품질
+  </div>
+  <div class="nav-footer">
+    MCP Visualization<br>GitHub Pages
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- PAGE 0: Context Window -->
+  <div class="page active" id="page-0">
+    <div class="page-header">
+      <div class="eyebrow">Context Window</div>
+      <h1>MCP 서버가 많아지면<br>무슨 일이 생길까?</h1>
+      <p>MCP 도구 목록은 매 요청마다 컨텍스트 창에 주입됩니다. 서버 수와 도구 수를 조절해 보세요.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--purple)"></div>파라미터 조절</div>
+      <div class="panel-body">
+        <div class="slider-row">
+          <label>MCP 서버 수</label>
+          <input type="range" min="0" max="15" value="3" id="srv">
+          <span class="val" id="srv-val">3</span>
+          <span style="font-size:12px;color:var(--text-muted)">개</span>
+        </div>
+        <div class="slider-row">
+          <label>서버당 도구 수</label>
+          <input type="range" min="1" max="30" value="8" id="tool">
+          <span class="val" id="tool-val">8</span>
+          <span style="font-size:12px;color:var(--text-muted)">개</span>
+        </div>
+
+        <div style="margin-bottom:8px;display:flex;justify-content:space-between;font-size:12px;color:var(--text-sub);">
+          <span>컨텍스트 창 사용량 (200k 토큰 기준)</span>
+          <span id="pct" style="font-family:var(--mono);font-weight:600;"></span>
+        </div>
+        <div class="ctx-bar-wrap" style="background:var(--surface2);border:1px solid var(--border);">
+          <div class="ctx-bar-inner">
+            <div class="ctx-seg" id="seg-mcp" style="background:rgba(155,141,255,.7);color:#EEEDFE;"></div>
+            <div class="ctx-seg" id="seg-builtin" style="background:rgba(62,207,170,.5);color:#E1F5EE;width:6%;">내장 ~12k</div>
+            <div class="ctx-seg" id="seg-conv" style="background:rgba(180,178,169,.3);color:#E8E6F0;width:15%;">대화</div>
+            <div class="ctx-seg" id="seg-free" style="background:rgba(42,42,56,.5);color:var(--text-muted);flex:1;">여유</div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(155,141,255,.7)"></div>MCP 도구 메타데이터</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(62,207,170,.5)"></div>내장 도구</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(180,178,169,.3)"></div>대화/추론</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(42,42,56,.8);border:1px solid var(--border)"></div>남은 공간</div>
+        </div>
+
+        <div class="warn-card" id="warn-card"></div>
+
+        <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">실제 사례 프리셋</div>
+          <div class="preset-row">
+            <button class="preset-btn" onclick="setPreset(1,21)">Playwright 1개 (21도구)</button>
+            <button class="preset-btn" onclick="setPreset(5,8)">중간 규모 (5×8)</button>
+            <button class="preset-btn" onclick="setPreset(5,30)">Cursor 한계 초과</button>
+            <button class="preset-btn danger" onclick="setPreset(15,20)">위험 구간 (15×20)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="hl">핵심 원리</span> — MCP 서버들의 도구 목록은 매 요청마다 컨텍스트 창에 통째로 주입됩니다.
+      도구 하나당 약 400토큰이 소비되며, 이는 Prefill O(n²) 계산량에 직접 영향을 줍니다.
+      <span class="hl">도구가 많아질수록 첫 응답 지연, 도구 선택 오류, 환각(hallucination)</span>이 늘어납니다.
+    </div>
+  </div>
+
+  <!-- PAGE 1: JSON Spec -->
+  <div class="page" id="page-1">
+    <div class="page-header">
+      <div class="eyebrow">JSON Schema Quality</div>
+      <h1>MCP 도구 명세<br>얼마나 자세히 써야 할까?</h1>
+      <p>LLM이 도구를 정확하게 쓰려면 description과 schema를 어떻게 작성해야 하는지 비교해 보세요.</p>
+    </div>
+
+    <div class="tab-row" id="spec-tabs"></div>
+    <div class="scores-grid" id="spec-scores"></div>
+    <div class="verdict-banner" id="spec-verdict"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><div class="dot" style="background:var(--purple)"></div>JSON 명세</div>
+        <div class="code-block" id="spec-code"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="dot" id="issue-dot" style="background:var(--text-muted)"></div><span id="issue-title">분석</span></div>
+        <div class="issues-list" id="spec-issues"></div>
+      </div>
+    </div>
+    <div class="call-block">
+      <div class="call-hdr"><span>⚡</span> Claude의 실제 호출 예시</div>
+      <div class="call-body" id="spec-call"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ══ Nav ══ */
+function goPage(i) {
+  document.querySelectorAll('.page').forEach((p,j) => p.classList.toggle('active', i===j));
+  document.querySelectorAll('.nav-item').forEach((n,j) => n.classList.toggle('active', i===j));
+  if(window.innerWidth <= 720) document.getElementById('nav').classList.remove('open');
+}
+function toggleNav() {
+  document.getElementById('nav').classList.toggle('open');
+}
+
+/* ══ PAGE 0: Context Window ══ */
+function scoreColor(v) {
+  if(v>=80) return 'var(--green)';
+  if(v>=50) return 'var(--amber)';
+  return 'var(--coral)';
+}
+function updateCtx() {
+  const srv = +document.getElementById('srv').value;
+  const tool = +document.getElementById('tool').value;
+  document.getElementById('srv-val').textContent = srv;
+  document.getElementById('tool-val').textContent = tool;
+  const total = srv * tool;
+  const mcpTok = total * 400;
+  const builtinTok = 12000;
+  const convTok = 30000;
+  const win = 200000;
+  const usedTok = mcpTok + builtinTok + convTok;
+  const freeTok = Math.max(0, win - usedTok);
+  const usedPct = Math.min(100, usedTok/win*100);
+  const mcpPct = mcpTok/win*100;
+  const freePct = freeTok/win*100;
+
+  document.getElementById('seg-mcp').style.width = mcpPct + '%';
+  document.getElementById('seg-mcp').textContent = mcpTok > 6000 ? `MCP ~${Math.round(mcpTok/1000)}k` : '';
+  document.getElementById('seg-free').style.width = freePct + '%';
+  document.getElementById('seg-free').textContent = freeTok > 8000 ? `여유 ~${Math.round(freeTok/1000)}k` : '';
+  document.getElementById('pct').textContent = Math.round(usedPct) + '% 사용';
+
+  const wc = document.getElementById('warn-card');
+  let bg, border, color, title, detail;
+  if(total === 0) {
+    [bg,border,color,title,detail] = ['var(--surface2)','var(--border)','var(--text-sub)','도구 없음 — 전체 컨텍스트를 대화에 활용 가능',''];
+  } else if(total<=15 && usedPct<25) {
+    [bg,border,color,title,detail] = ['rgba(93,222,138,.07)','rgba(93,222,138,.25)','var(--green)',`안전 구간 — 도구 ${total}개, MCP 토큰 ~${Math.round(mcpTok/1000)}k`,'도구 선택 정확도 높음, 충분한 추론 공간 확보'];
+  } else if(total<=40 && usedPct<50) {
+    [bg,border,color,title,detail] = ['rgba(245,166,35,.07)','rgba(245,166,35,.25)','var(--amber)',`주의 구간 — 도구 ${total}개, MCP 토큰 ~${Math.round(mcpTok/1000)}k`,'Cursor 40개 한도 근접. 유사한 도구 이름 혼동 위험 시작'];
+  } else if(usedPct<80) {
+    [bg,border,color,title,detail] = ['rgba(255,107,107,.07)','rgba(255,107,107,.25)','var(--coral)',`위험 구간 — 도구 ${total}개, MCP 토큰 ~${Math.round(mcpTok/1000)}k`,'도구 환각(hallucination) 빈발. 성능 저하, 응답 지연 증가'];
+  } else {
+    [bg,border,color,title,detail] = ['rgba(255,107,107,.12)','rgba(255,107,107,.5)','var(--coral)',`임계 초과 — 도구 ${total}개, 컨텍스트 ${Math.round(usedPct)}% 소진`,'대화/추론 공간 부족으로 오류 유발. 중요 정보 잘려나감(truncation)'];
+  }
+  wc.style.background = bg;
+  wc.style.borderColor = border;
+  wc.style.color = color;
+  wc.innerHTML = `<div class="warn-title">${title}</div>${detail ? `<div style="opacity:.8;font-weight:400;font-size:12px">${detail}</div>` : ''}`;
+}
+function setPreset(s,t) {
+  document.getElementById('srv').value = s;
+  document.getElementById('tool').value = t;
+  updateCtx();
+}
+document.getElementById('srv').addEventListener('input', updateCtx);
+document.getElementById('tool').addEventListener('input', updateCtx);
+updateCtx();
+
+/* ══ PAGE 1: JSON Spec ══ */
+const specs = [
+  {
+    label:'수준 1', sub:'너무 빈약',
+    scores:{clarity:15,usage:20,safety:10},
+    verdict:'danger', vicon:'🔴', vtext:'Claude가 이 도구를 제대로 사용하지 못합니다',
+    code:`{
+  <span class="k">"name"</span>: <span class="s">"send_email"</span>,
+  <span class="w">// ❌ 설명이 너무 짧음</span>
+  <span class="k">"description"</span>: <span class="s">"이메일 전송"</span>,
+  <span class="k">"inputSchema"</span>: {
+    <span class="k">"type"</span>: <span class="t">"object"</span>,
+    <span class="k">"properties"</span>: {
+      <span class="k">"to"</span>: { <span class="k">"type"</span>: <span class="t">"string"</span> },
+      <span class="w">// ❌ subject 없음</span>
+      <span class="k">"body"</span>: { <span class="k">"type"</span>: <span class="t">"string"</span> }
+    }
+    <span class="w">// ❌ required 없음</span>
+  }
+}`,
+    issues:[
+      {i:'❌',t:'description이 너무 짧아 언제 써야 할지 모름'},
+      {i:'❌',t:'"to"에 이름인지 이메일 주소인지 불명확'},
+      {i:'❌',t:'required 없어 필수값 누락 가능'},
+      {i:'❌',t:'subject 파라미터 자체가 누락됨'},
+      {i:'❌',t:'형식 제약 없어 잘못된 값 허용'},
+    ],
+    call:`<span class="w">// 잘못된 호출 가능성 높음</span>
+tool_use: send_email({
+  <span class="k">"to"</span>: <span class="s">"홍길동"</span>,      <span class="c">// 이름인지 주소인지 모름</span>
+  <span class="k">"body"</span>: <span class="s">"안녕하세요"</span>  <span class="c">// 제목 없음</span>
+})`,
+  },
+  {
+    label:'수준 2', sub:'최소한',
+    scores:{clarity:60,usage:65,safety:40},
+    verdict:'warning', vicon:'🟡', vtext:'쓸 수는 있지만 실수 가능성이 있습니다',
+    code:`{
+  <span class="k">"name"</span>: <span class="s">"send_email"</span>,
+  <span class="c">// ⚠ 언제/주의사항 없음</span>
+  <span class="k">"description"</span>: <span class="s">"지정한 수신자에게 이메일을 보냅니다."</span>,
+  <span class="k">"inputSchema"</span>: {
+    <span class="k">"type"</span>: <span class="t">"object"</span>,
+    <span class="k">"properties"</span>: {
+      <span class="k">"to"</span>: {
+        <span class="k">"type"</span>: <span class="t">"string"</span>,
+        <span class="k">"description"</span>: <span class="s">"수신자 이메일 주소"</span>
+      },
+      <span class="k">"subject"</span>: {
+        <span class="k">"type"</span>: <span class="t">"string"</span>,
+        <span class="k">"description"</span>: <span class="s">"이메일 제목"</span>
+      },
+      <span class="k">"body"</span>: {
+        <span class="k">"type"</span>: <span class="t">"string"</span>,
+        <span class="k">"description"</span>: <span class="s">"이메일 본문"</span>
+        <span class="c">// ⚠ HTML/plain text 구분 없음</span>
+      }
+    },
+    <span class="k">"required"</span>: [<span class="s">"to"</span>, <span class="s">"subject"</span>, <span class="s">"body"</span>]
+  }
+}`,
+    issues:[
+      {i:'⚠️',t:'이메일 형식 검증 없음 (format: email 누락)'},
+      {i:'⚠️',t:'HTML/plain text 구분 없음'},
+      {i:'⚠️',t:'언제 쓰는지 컨텍스트 부족'},
+      {i:'✅',t:'required 필드 올바르게 명시'},
+      {i:'✅',t:'파라미터별 설명으로 기본 동작 가능'},
+    ],
+    call:`<span class="c">// 대체로 동작함</span>
+tool_use: send_email({
+  <span class="k">"to"</span>: <span class="s">"user@example.com"</span>,
+  <span class="k">"subject"</span>: <span class="s">"회의 일정 안내"</span>,
+  <span class="k">"body"</span>: <span class="s">"안녕하세요, 내일 오후 3시에..."</span>
+})`,
+  },
+  {
+    label:'수준 3', sub:'✨ 권장',
+    scores:{clarity:92,usage:90,safety:88},
+    verdict:'success', vicon:'🟢', vtext:'Claude가 정확하고 안전하게 사용할 수 있습니다',
+    code:`{
+  <span class="k">"name"</span>: <span class="s">"send_email"</span>,
+  <span class="g">// ✅ 언제/어떻게/주의사항 포함</span>
+  <span class="k">"description"</span>: <span class="s">"사용자를 대신해 이메일을 발송합니다.
+    실제 이메일이 전송되므로 사용자 확인 후 호출하세요.
+    마케팅 대량 발송에는 사용하지 마세요."</span>,
+  <span class="k">"inputSchema"</span>: {
+    <span class="k">"type"</span>: <span class="t">"object"</span>,
+    <span class="k">"properties"</span>: {
+      <span class="k">"to"</span>: {
+        <span class="k">"type"</span>: <span class="t">"string"</span>,
+        <span class="g">"format"</span>: <span class="s">"email"</span>,   <span class="g">// ✅ 형식 제약</span>
+        <span class="k">"description"</span>: <span class="s">"수신자 이메일 (예: user@example.com)"</span>
+      },
+      <span class="k">"subject"</span>: {
+        <span class="k">"type"</span>: <span class="t">"string"</span>,
+        <span class="k">"description"</span>: <span class="s">"이메일 제목 (100자 이내 권장)"</span>,
+        <span class="g">"maxLength"</span>: <span class="t">200</span>
+      },
+      <span class="k">"body"</span>: {
+        <span class="k">"type"</span>: <span class="t">"string"</span>,
+        <span class="k">"description"</span>: <span class="s">"본문. plain text만 지원합니다."</span>
+      },
+      <span class="k">"cc"</span>: {
+        <span class="k">"type"</span>: <span class="t">"array"</span>,
+        <span class="k">"items"</span>: { <span class="k">"type"</span>: <span class="t">"string"</span>, <span class="g">"format"</span>: <span class="s">"email"</span> },
+        <span class="k">"description"</span>: <span class="s">"참조 수신자 목록 (선택)"</span>
+      }
+    },
+    <span class="k">"required"</span>: [<span class="s">"to"</span>, <span class="s">"subject"</span>, <span class="s">"body"</span>]
+  }
+}`,
+    issues:[
+      {i:'✅',t:'description에 언제/어떻게/주의사항 명시'},
+      {i:'✅',t:'format: email로 형식 제약'},
+      {i:'✅',t:'maxLength로 길이 제한'},
+      {i:'✅',t:'예시 포함으로 모호함 제거'},
+      {i:'✅',t:'선택/필수 파라미터 명확히 구분'},
+    ],
+    call:`<span class="g">// 정확한 호출</span>
+tool_use: send_email({
+  <span class="k">"to"</span>: <span class="s">"manager@company.com"</span>,
+  <span class="k">"subject"</span>: <span class="s">"보고서 검토 요청"</span>,
+  <span class="k">"body"</span>: <span class="s">"안녕하세요, 첨부 파일을..."</span>,
+  <span class="k">"cc"</span>: [<span class="s">"team@company.com"</span>]
+})`,
+  },
+  {
+    label:'수준 4', sub:'과함',
+    scores:{clarity:52,usage:58,safety:75},
+    verdict:'warning', vicon:'🟠', vtext:'중요한 정보가 기술적 노이즈에 묻힙니다',
+    code:`{
+  <span class="k">"name"</span>: <span class="s">"send_email"</span>,
+  <span class="w">// ❌ 구현 세부사항이 핵심을 덮음</span>
+  <span class="k">"description"</span>: <span class="s">"SMTP 프로토콜을 통해 RFC 5321 표준을
+    준수하는 이메일을 발송합니다. 내부적으로
+    Google Workspace API v1.3을 사용하며,
+    OAuth 2.0 토큰이 필요합니다. DKIM 서명이
+    자동으로 적용됩니다. SPF 레코드는..."</span>,
+  <span class="k">"inputSchema"</span>: {
+    <span class="k">"type"</span>: <span class="t">"object"</span>,
+    <span class="k">"properties"</span>: {
+      <span class="k">"to"</span>: {
+        <span class="k">"type"</span>: <span class="t">"string"</span>,
+        <span class="k">"format"</span>: <span class="s">"email"</span>,
+        <span class="w">// ❌ 과도한 regex</span>
+        <span class="k">"pattern"</span>: <span class="s">"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"</span>,
+        <span class="k">"minLength"</span>: <span class="t">5</span>, <span class="k">"maxLength"</span>: <span class="t">254</span>,
+        <span class="k">"description"</span>: <span class="s">"RFC 5321 준수 수신자 주소"</span>
+      }
+    }
+  }
+}`,
+    issues:[
+      {i:'❌',t:'SMTP, OAuth, DKIM은 Claude에게 불필요한 정보'},
+      {i:'❌',t:'핵심 사용 지침이 기술 설명에 묻힘'},
+      {i:'⚠️',t:'과도한 regex가 유효한 주소를 거부할 수 있음'},
+      {i:'⚠️',t:'description 과부하로 중요 부분을 놓칠 수 있음'},
+      {i:'✅',t:'format, maxLength는 좋은 시도'},
+    ],
+    call:`<span class="w">// 핵심을 놓칠 수 있음</span>
+<span class="c">// "첨부파일은 attach_file 쓰세요"가 묻혀</span>
+<span class="c">// 잘못된 도구를 선택할 가능성 있음</span>
+tool_use: send_email({
+  <span class="k">"to"</span>: <span class="s">"user@example.com"</span>
+  <span class="c">// 사용자 확인 절차를 놓칠 수 있음</span>
+})`,
+  },
+];
+
+function verdictStyle(type) {
+  const m = {
+    danger:  {border:'rgba(255,107,107,.3)',bg:'rgba(255,107,107,.07)',color:'var(--coral)'},
+    warning: {border:'rgba(245,166,35,.3)', bg:'rgba(245,166,35,.07)', color:'var(--amber)'},
+    success: {border:'rgba(93,222,138,.3)', bg:'rgba(93,222,138,.07)', color:'var(--green)'},
+  };
+  return m[type];
+}
+
+function renderSpec(i) {
+  const s = specs[i];
+  document.getElementById('spec-code').innerHTML = s.code;
+
+  const scoreKeys = [
+    {k:'clarity',l:'Claude 이해도'},
+    {k:'usage',  l:'올바른 호출 확률'},
+    {k:'safety', l:'안전성'},
+  ];
+  document.getElementById('spec-scores').innerHTML = scoreKeys.map(sk => {
+    const v = s.scores[sk.k];
+    const c = scoreColor(v);
+    return `<div class="score-card">
+      <div class="score-lbl">${sk.l}</div>
+      <div class="score-num" style="color:${c}">${v}<span style="font-size:13px;color:var(--text-muted)">%</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${v}%;background:${c}"></div></div>
+    </div>`;
+  }).join('');
+
+  const vs = verdictStyle(s.verdict);
+  const vb = document.getElementById('spec-verdict');
+  vb.style.borderColor = vs.border;
+  vb.style.background = vs.bg;
+  vb.style.color = vs.color;
+  vb.innerHTML = `<span style="font-size:18px">${s.vicon}</span>${s.vtext}`;
+
+  const idot = document.getElementById('issue-dot');
+  idot.style.background = vs.color;
+  document.getElementById('issue-title').textContent = s.verdict==='success' ? '잘된 점' : '분석 포인트';
+  document.getElementById('spec-issues').innerHTML = s.issues.map(it =>
+    `<div class="issue-row"><span class="issue-icon">${it.i}</span><span>${it.t}</span></div>`
+  ).join('');
+
+  document.getElementById('spec-call').innerHTML = s.call;
+}
+
+function initSpecTabs() {
+  const c = document.getElementById('spec-tabs');
+  specs.forEach((s,i) => {
+    const b = document.createElement('button');
+    b.className = 'tbtn' + (i===2?' on':'');
+    b.innerHTML = `<b>${s.label}</b> <span style="opacity:.6;font-size:12px">${s.sub}</span>`;
+    b.onclick = () => {
+      document.querySelectorAll('#spec-tabs .tbtn').forEach((x,j)=>x.classList.toggle('on',j===i));
+      renderSpec(i);
+    };
+    c.appendChild(b);
+  });
+  renderSpec(2);
+}
+initSpecTabs();
+</script>
+</body>
+</html>
