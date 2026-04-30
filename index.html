@@ -402,15 +402,18 @@ body {
 @media(max-width:680px){ .two-col { grid-template-columns: 1fr; } }
 
 .code-block {
-  padding: 16px;
+  padding: 18px 20px;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.75;
   color: #c9c7e0;
   overflow-x: auto;
   white-space: pre;
-  max-height: 310px;
-  overflow-y: auto;
+}
+/* JSON 명세 페이지 전용: 주 코드 블록 (옅은 강조) */
+.code-block.spec-main {
+  background: rgba(155,141,255,.03);
+  font-size: 13.5px;
 }
 .k { color: #9b8dff; }
 .s { color: #3ecfaa; }
@@ -582,19 +585,22 @@ body {
     <div class="scores-grid" id="spec-scores"></div>
     <div class="verdict-banner" id="spec-verdict"></div>
 
+    <!-- JSON 명세: 풀 width로 한눈에 보기 -->
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-header"><div class="dot" style="background:var(--purple)"></div>JSON 명세</div>
+      <div class="code-block spec-main" id="spec-code"></div>
+    </div>
+
+    <!-- 분석 + 호출 예시: 아래 두 칼럼 -->
     <div class="two-col">
-      <div class="card">
-        <div class="card-header"><div class="dot" style="background:var(--purple)"></div>JSON 명세</div>
-        <div class="code-block" id="spec-code"></div>
-      </div>
       <div class="card">
         <div class="card-header"><div class="dot" id="issue-dot" style="background:var(--text-muted)"></div><span id="issue-title">분석</span></div>
         <div class="issues-list" id="spec-issues"></div>
       </div>
-    </div>
-    <div class="call-block">
-      <div class="call-hdr"><span>⚡</span> Claude의 실제 호출 예시</div>
-      <div class="call-body" id="spec-call"></div>
+      <div class="call-block">
+        <div class="call-hdr"><span>⚡</span> Claude의 실제 호출 예시</div>
+        <div class="call-body" id="spec-call"></div>
+      </div>
     </div>
   </div>
 
