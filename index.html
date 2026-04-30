@@ -1256,7 +1256,7 @@ initSpecTabs();
     { num:'02 / 05', title:'② Skill 매치 감지', color:'var(--amber)',
       desc:'현재 상황(이미지+언어)이 등록된 Skill 중 하나와 유사도가 높음을 Detector가 발견했습니다. 해당 Skill의 logit이 크게 상승하지만, 아직 winner는 결정되지 않은 상태예요.',
       code:'<span class="c">// Detector가 grip_skill 매치 감지</span>\nsim_grip = cosine(state_query, grip_key)  <span class="c">// 0.91 ↑</span>\nsim_nav  = cosine(state_query, nav_key)   <span class="c">// 0.12</span>\n\nskill_logits = [<span class="g">3.5</span>, 0.4, ...]  <span class="c">// grip_skill 상승</span>\nvla_logit    = 1.5',
-      st:{input:'teal', tshared:'glow-teal', tskill:'glow-amber-strong', vla:'blue', det:'glow-amber', vlogit:'dim', slogits:'glow-amber', softmax:'dim', output:'dim'}
+      st:{input:'teal', tshared:'glow-teal', tskill:'glow-amber-strong', vla:'dim', det:'glow-amber', vlogit:'dim', slogits:'glow-amber', softmax:'dim', output:'dim'}
     },
     { num:'03 / 05', title:'③ Softmax 결정 — Skill 호출', color:'var(--purple)',
       desc:'Unified Softmax가 새 분포를 계산합니다. argmax 결과 grip_skill이 winner로 선택되고, 즉시 MCP 호출이 시작됩니다. VLA backbone은 이 시점에 비활성화됩니다.',
